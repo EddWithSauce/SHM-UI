@@ -1,0 +1,592 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}NFD Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+  [x-cloak] { display: none !important; }
+</style>
+
+
+<div
+  x-data="{
+  page: localStorage.getItem('nfdPage') || 'dashboard',
+  tab: localStorage.getItem('nfdTab') || 'identify',
+  advisoryTab: localStorage.getItem('nfdAdvisoryTab') || 'engineering',
+  alertLevel: 'green',
+
+  setPage(p) {
+    this.page = p
+    localStorage.setItem('nfdPage', p)
+  },
+  setTab(t) {
+    this.tab = t
+    localStorage.setItem('nfdTab', t)
+  },
+  setAdvisoryTab(t) {
+    this.advisoryTab = t
+    localStorage.setItem('nfdAdvisoryTab', t)
+  }
+}"
+
+  class="flex h-full gap-6 p-6 w-full"
+>
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 flex-shrink-0 rounded-[26px] p-6
+                bg-white/55 backdrop-blur-2xl
+                border border-white/60
+                shadow-[0_18px_60px_rgba(139,69,19,0.18)]
+                flex flex-col">
+
+    <div class="mb-6">
+      <h2 class="text-lg font-bold text-[color:var(--text-100)]">NFD Admin</h2>
+      <p class="text-xs opacity-70">Natural Frequency & Damping</p>
+    </div>
+
+    <!-- NAV -->
+    <nav class="space-y-2 text-sm">
+
+      <!-- Dashboard -->
+      <div
+        role="button"
+        tabindex="0"
+        @click="page='dashboard'"
+        @keydown.enter="page='dashboard'"
+        :class="page==='dashboard'
+          ? 'bg-[linear-gradient(90deg,var(--primary-100),var(--primary-200))] text-white shadow'
+          : 'bg-white/60 border border-white opacity-85 hover:opacity-100 hover:shadow'"
+        class="px-4 py-3 rounded-2xl font-semibold cursor-pointer transition">
+        Dashboard
+      </div>
+
+      <!-- Advisory -->
+      <div
+        role="button"
+        tabindex="0"
+        @click="setPage('advisory')"
+        @keydown.enter="page='advisory'"
+        :class="page==='advisory'
+          ? 'bg-[linear-gradient(90deg,var(--primary-100),var(--primary-200))] text-white shadow'
+          : 'bg-white/60 border border-white opacity-85 hover:opacity-100 hover:shadow'"
+        class="px-4 py-3 rounded-2xl cursor-pointer transition">
+        Advisory
+      </div>
+
+      <!-- History -->
+      <div
+        role="button"
+        tabindex="0"
+        @click="setPage('history')"
+        @keydown.enter="page='history'"
+        :class="page==='history'
+          ? 'bg-[linear-gradient(90deg,var(--primary-100),var(--primary-200))] text-white shadow'
+          : 'bg-white/60 border border-white opacity-85 hover:opacity-100 hover:shadow'"
+        class="px-4 py-3 rounded-2xl cursor-pointer transition">
+        History
+      </div>
+
+      <!-- About -->
+      <div
+        role="button"
+        tabindex="0"
+        @click="setPage('about')"
+        @keydown.enter="page='about'"
+        :class="page==='about'
+          ? 'bg-[linear-gradient(90deg,var(--primary-100),var(--primary-200))] text-white shadow'
+          : 'bg-white/60 border border-white opacity-85 hover:opacity-100 hover:shadow'"
+        class="px-4 py-3 rounded-2xl cursor-pointer transition">
+        About
+      </div>
+
+    </nav>
+
+    <!-- Logout -->
+    <div class="mt-auto pt-6">
+      <a href="{% url 'logout' %}"
+         class="block text-center px-4 py-3 rounded-2xl
+                bg-[linear-gradient(90deg,var(--accent-100),var(--primary-300))]
+                text-white font-semibold shadow hover:opacity-90 transition">
+        Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN eto wrapper -->
+  <main class="flex-1 overflow-y-auto space-y-6 pb-10">
+
+    <!-- Header -->
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold text-[color:var(--text-100)]">
+        DASHBOARD
+      </h1>
+      <p class="text-sm opacity-70 mt-1">
+        Natural Frequency & Damping Ratio Identification
+      </p>
+    </div>
+
+    <!-- TOP STATUS CARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      <div class="rounded-[22px] p-6 bg-white/60 backdrop-blur border border-white/70 shadow-[0_14px_45px_rgba(139,69,19,0.10)]">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-medium text-[color:var(--text-100)]/70">Analysis Status</div>
+          <span class="inline-flex items-center gap-2 text-xs opacity-80">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Ready
+          </span>
+        </div>
+        <div class="mt-3 text-2xl font-bold text-[color:var(--text-100)]">Idle</div>
+        <div class="mt-3 text-xs opacity-70">Waiting for signal window</div>
+      </div>
+
+      <div class="rounded-[22px] p-6 bg-white/60 backdrop-blur border border-white/70 shadow-[0_14px_45px_rgba(139,69,19,0.10)]">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-medium text-[color:var(--text-100)]/70">Dominant Frequency</div>
+          <span class="inline-flex items-center gap-2 text-xs opacity-80">
+            <span class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
+            Hz
+          </span>
+        </div>
+        <div class="mt-3 text-2xl font-bold text-[color:var(--text-100)]">--.--</div>
+        <div class="mt-3 text-xs opacity-70">Peak from FFT (placeholder)</div>
+      </div>
+
+      <div class="rounded-[22px] p-6 bg-white/60 backdrop-blur border border-white/70 shadow-[0_14px_45px_rgba(139,69,19,0.10)]">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-medium text-[color:var(--text-100)]/70">Damping Ratio</div>
+          <span class="inline-flex items-center gap-2 text-xs opacity-80">
+            <span class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
+            %
+          </span>
+        </div>
+        <div class="mt-3 text-2xl font-bold text-[color:var(--text-100)]">--.--</div>
+        <div class="mt-3 text-xs opacity-70">Estimated (placeholder)</div>
+      </div>
+
+    </div>
+
+    <!-- WORKSPACE CONTAINER -->
+    <div class="rounded-[28px] p-6 bg-white/55 backdrop-blur-2xl border border-white/60
+                shadow-[0_18px_60px_rgba(139,69,19,0.15)]">
+
+      
+      <!-- PAGE: DASHBOARD -->
+      
+      <div x-show="page==='dashboard'" x-cloak>
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="font-semibold text-lg text-[color:var(--text-100)]">NFD Workspace</h2>
+            <p class="text-xs opacity-70 mt-1">Identification • FFT • Results</p>
+          </div>
+
+          <div class="inline-flex items-center gap-1 rounded-2xl p-1 bg-white/60 border border-white/70 shadow-inner">
+            <button type="button" @click="tab='identify'"
+              class="px-3 py-2 rounded-xl text-sm font-medium transition"
+              :class="tab==='identify' ? 'bg-white shadow-sm' : 'opacity-70 hover:opacity-100'">
+              Identify
+            </button>
+            <button type="button" @click="tab='fft'"
+              class="px-3 py-2 rounded-xl text-sm font-medium transition"
+              :class="tab==='fft' ? 'bg-white shadow-sm' : 'opacity-70 hover:opacity-100'">
+              FFT
+            </button>
+            <button type="button" @click="tab='results'"
+              class="px-3 py-2 rounded-xl text-sm font-medium transition"
+              :class="tab==='results' ? 'bg-white shadow-sm' : 'opacity-70 hover:opacity-100'">
+              Results
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-6 relative h-[360px]">
+          <div class="absolute inset-0 rounded-2xl bg-white/70 border border-white/80 overflow-hidden">
+
+            <!-- Identify -->
+            <section x-show="tab==='identify'" x-cloak class="absolute inset-0">
+              <div class="px-4 py-3 border-b border-white/70 flex items-center justify-between">
+                <div class="text-sm font-semibold">Identification (Placeholder)</div>
+                <div class="text-xs opacity-70">Window / Filter</div>
+              </div>
+              <div class="h-[calc(360px-48px)] flex items-center justify-center text-sm opacity-70 italic">
+                Signal preprocessing + peak picking will go here
+              </div>
+            </section>
+
+            <!-- FFT -->
+            <section x-show="tab==='fft'" x-cloak class="absolute inset-0">
+              <div class="px-4 py-3 border-b border-white/70 flex items-center justify-between">
+                <div class="text-sm font-semibold">FFT View (Placeholder)</div>
+                <div class="text-xs opacity-70">Frequency Domain</div>
+              </div>
+              <div class="h-[calc(360px-48px)] flex items-center justify-center text-sm opacity-70 italic">
+                FFT / spectrum chart will go here
+              </div>
+            </section>
+
+            <!-- Results -->
+            <section x-show="tab==='results'" x-cloak class="absolute inset-0">
+              <div class="px-4 py-3 border-b border-white/70 flex items-center justify-between">
+                <div class="text-sm font-semibold">Computed Results (Placeholder)</div>
+                <div class="text-xs opacity-70">Modes</div>
+              </div>
+
+              <div class="p-4 space-y-3 text-sm h-[calc(360px-48px)] overflow-auto">
+                <div class="rounded-xl p-3 bg-white/70 border border-white/80 flex items-center justify-between">
+                  <span class="opacity-80">Natural Frequency (fₙ)</span>
+                  <span class="text-xs opacity-70">--.-- Hz</span>
+                </div>
+                <div class="rounded-xl p-3 bg-white/70 border border-white/80 flex items-center justify-between">
+                  <span class="opacity-80">Damping Ratio (ζ)</span>
+                  <span class="text-xs opacity-70">--.-- %</span>
+                </div>
+                <div class="rounded-xl p-3 bg-white/70 border border-white/80 flex items-center justify-between">
+                  <span class="opacity-80">Method</span>
+                  <span class="text-xs opacity-70">FFT / Half-Power (placeholder)</span>
+                </div>
+
+                <!-- BASELINE COMPARISON -->
+                <div class="mt-4">
+                  <div class="text-xs font-semibold uppercase opacity-60 mb-2">
+                    Baseline Comparison (ETABS Reference)
+                  </div>
+
+                  <div class="rounded-xl p-3 bg-white/60 border border-white/80 space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="opacity-80">Analytical Frequency (ETABS)</span>
+                      <span class="text-xs opacity-70">3.10 Hz</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="opacity-80">Measured Frequency (OMA)</span>
+                      <span class="text-xs opacity-70">3.21 Hz</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="opacity-80">Difference</span>
+                      <span class="text-xs font-medium text-emerald-600">+3.5 %</span>
+                    </div>
+
+                    <div class="pt-2 text-xs opacity-60">
+                      Minor variation is expected due to ambient excitation and modeling assumptions.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+      
+      <!-- PAGE: ADVISORY -->
+     
+      <div x-show="page==='advisory'" x-cloak>
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="font-semibold text-lg text-[color:var(--text-100)]">Advisory</h2>
+            <p class="text-xs opacity-70 mt-1">Engineering Advisory • Earthquake Response</p>
+          </div>
+
+          <!-- Advisory Tabs -->
+          <div class="inline-flex items-center gap-1 rounded-2xl p-1 bg-white/60 border border-white/70 shadow-inner">
+            <button type="button" @click="advisoryTab='engineering'"
+              class="px-3 py-2 rounded-xl text-sm font-medium transition"
+              :class="advisoryTab==='engineering' ? 'bg-white shadow-sm' : 'opacity-70 hover:opacity-100'">
+              Engineering
+            </button>
+            <button type="button" @click="advisoryTab='response'"
+              class="px-3 py-2 rounded-xl text-sm font-medium transition"
+              :class="advisoryTab==='response' ? 'bg-white shadow-sm' : 'opacity-70 hover:opacity-100'">
+              Earthquake Response
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-6 relative h-[360px]">
+          <div class="absolute inset-0 rounded-2xl bg-white/70 border border-white/80 overflow-hidden">
+
+            <!-- Engineering Advisory -->
+            <section x-show="advisoryTab==='engineering'" x-cloak class="absolute inset-0 p-4 overflow-auto">
+              <div class="rounded-2xl bg-white/70 border border-white/80 p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-semibold">Engineering Interpretation (Placeholder)</div>
+                  <span class="text-xs opacity-60">Based on frequency & damping trends</span>
+                </div>
+
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div class="rounded-xl bg-white/70 border border-white/80 p-3">
+                    <div class="text-xs opacity-60">Condition</div>
+                    <div class="mt-1 font-semibold text-emerald-700">Stable</div>
+                    <div class="mt-2 text-xs opacity-60">No significant stiffness loss detected.</div>
+                  </div>
+
+                  <div class="rounded-xl bg-white/70 border border-white/80 p-3">
+                    <div class="text-xs opacity-60">Watch Threshold</div>
+                    <div class="mt-1 font-semibold">±5% frequency drift</div>
+                    <div class="mt-2 text-xs opacity-60">Trigger review when exceeded.</div>
+                  </div>
+
+                  <div class="rounded-xl bg-white/70 border border-white/80 p-3">
+                    <div class="text-xs opacity-60">Recommended Action</div>
+                    <div class="mt-1 font-semibold">Continue Monitoring</div>
+                    <div class="mt-2 text-xs opacity-60">Log baseline weekly for comparison.</div>
+                  </div>
+                </div>
+
+                <div class="mt-4 rounded-xl bg-white/60 border border-white/80 p-3">
+                  <div class="text-xs font-semibold uppercase opacity-60 mb-2">Notes</div>
+                  <ul class="text-sm opacity-80 space-y-2">
+                    <li>• Ambient excitation can cause small frequency variations.</li>
+                    <li>• Compare changes against ETABS baseline and historical records.</li>
+                    <li>• If trend persists across multiple days, schedule inspection.</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <!-- Earthquake Response -->
+            <section x-show="advisoryTab==='response'" x-cloak class="absolute inset-0 p-4 overflow-auto">
+
+              <!-- sample lang delete din to !!!!!  -->
+              <div class="mb-3 flex flex-wrap items-center gap-2">
+                <span class="text-xs opacity-60">Demo Alert Level:</span>
+                <button @click="alertLevel='green'"
+                  class="px-3 py-1.5 rounded-xl text-xs border border-white/80 bg-white/60 hover:opacity-90 transition"
+                  :class="alertLevel==='green' ? 'font-semibold' : 'opacity-70'">Green</button>
+                <button @click="alertLevel='yellow'"
+                  class="px-3 py-1.5 rounded-xl text-xs border border-white/80 bg-white/60 hover:opacity-90 transition"
+                  :class="alertLevel==='yellow' ? 'font-semibold' : 'opacity-70'">Yellow</button>
+                <button @click="alertLevel='red'"
+                  class="px-3 py-1.5 rounded-xl text-xs border border-white/80 bg-white/60 hover:opacity-90 transition"
+                  :class="alertLevel==='red' ? 'font-semibold' : 'opacity-70'">Red</button>
+              </div>
+
+              <!-- GREEN -->
+              <div x-show="alertLevel==='green'" x-cloak class="rounded-2xl bg-emerald-50/70 border border-emerald-200 p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-semibold text-emerald-800">Normal Status (Green)</div>
+                  <span class="text-xs text-emerald-700">Monitoring Active</span>
+                </div>
+                <p class="mt-3 text-sm text-emerald-900/80">
+                  Structure is operating within normal vibration limits. Continue normal activities.
+                </p>
+                <ul class="mt-3 text-sm text-emerald-900/80 space-y-2">
+                  <li>• Keep monitoring enabled for continuous baseline tracking.</li>
+                  <li>• Report unusual vibrations to the administrator.</li>
+                </ul>
+              </div>
+
+              <!-- YELLOW -->
+              <div x-show="alertLevel==='yellow'" x-cloak class="rounded-2xl bg-amber-50/70 border border-amber-200 p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-semibold text-amber-800">Alert Status (Yellow)</div>
+                  <span class="text-xs text-amber-700">Remain Attentive</span>
+                </div>
+                <p class="mt-3 text-sm text-amber-900/80">
+                  Increased vibration detected. Remain attentive, limit movement, and monitor updates.
+                </p>
+                <ul class="mt-3 text-sm text-amber-900/80 space-y-2">
+                  <li>• Stay calm and prepare for possible aftershocks.</li>
+                  <li>• Avoid crowded areas and unsecured shelves.</li>
+                  <li>• Monitor the dashboard for status changes.</li>
+                </ul>
+              </div>
+
+              <!-- RED -->
+              <div x-show="alertLevel==='red'" x-cloak class="rounded-2xl bg-rose-50/70 border border-rose-200 p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-semibold text-rose-800">Danger Status (Red)</div>
+                  <span class="text-xs text-rose-700">Follow Safety Procedures</span>
+                </div>
+                <p class="mt-3 text-sm text-rose-900/80">
+                  Strong seismic motion detected. Follow standard earthquake safety procedures:
+                </p>
+                <ul class="mt-3 text-sm text-rose-900/80 space-y-2">
+                  <li><b>• Drop, Cover, and Hold On.</b></li>
+                  <li>• Stay away from windows and heavy objects.</li>
+                  <li>• Evacuate only after shaking stops and conditions are safe.</li>
+                </ul>
+              </div>
+
+              <!-- Post-earthquake reminders (always show) -->
+              <div class="mt-4 rounded-2xl bg-white/70 border border-white/80 p-4">
+                <div class="text-sm font-semibold">Post-Earthquake Reminders</div>
+                <ul class="mt-2 text-sm opacity-80 space-y-2">
+                  <li>• Avoid re-entering the structure until inspection is completed.</li>
+                  <li>• Report cracks, unusual sounds, or visible damage to admins.</li>
+                  <li>• Await official clearance before resuming building use.</li>
+                </ul>
+              </div>
+
+            </section>
+          </div>
+        </div>
+
+      </div>
+
+      
+      <!-- PAGE: HISTORY -->
+      
+      <div x-show="page==='history'" x-cloak>
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="font-semibold text-lg text-[color:var(--text-100)]">Monitoring History</h2>
+            <p class="text-xs opacity-70 mt-1">Daily / Event-Based Records • Downloads • Filters</p>
+          </div>
+        </div>
+
+        <div class="mt-6 relative h-[360px]">
+          <div class="absolute inset-0 rounded-2xl bg-white/70 border border-white/80 overflow-hidden p-4 flex flex-col gap-4">
+
+            <!-- Filters -->
+            <div class="rounded-2xl bg-white/70 border border-white/80 p-3">
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div>
+                  <div class="text-xs font-medium opacity-70 mb-1">From</div>
+                  <input type="date" class="w-full rounded-xl p-2 bg-white/70 border border-white/80 outline-none">
+                </div>
+                <div>
+                  <div class="text-xs font-medium opacity-70 mb-1">To</div>
+                  <input type="date" class="w-full rounded-xl p-2 bg-white/70 border border-white/80 outline-none">
+                </div>
+                <div>
+                  <div class="text-xs font-medium opacity-70 mb-1">Event Type</div>
+                  <select class="w-full rounded-xl p-2 bg-white/70 border border-white/80 outline-none">
+                    <option>All</option>
+                    <option>Ambient</option>
+                    <option>Human Activity</option>
+                    <option>Seismic</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="text-xs font-medium opacity-70 mb-1">Alert Level</div>
+                  <select class="w-full rounded-xl p-2 bg-white/70 border border-white/80 outline-none">
+                    <option>All</option>
+                    <option>Normal</option>
+                    <option>Alert (Yellow)</option>
+                    <option>Danger (Red)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Records -->
+            <div class="flex-1 rounded-2xl bg-white/60 border border-white/80 overflow-auto">
+              <div class="px-4 py-3 border-b border-white/70 flex items-center justify-between">
+                <div class="text-sm font-semibold">Archived Records (Placeholder)</div>
+                <div class="text-xs opacity-70">Download CSV / PDF</div>
+              </div>
+
+              <div class="p-4 space-y-3">
+                <!-- Record 1 -->
+                <div class="rounded-xl p-3 bg-white/70 border border-white/80 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div>
+                    <div class="text-sm font-semibold">2026-01-12 • 14:32</div>
+                    <div class="text-xs opacity-70 mt-1">Type: Seismic Event • fₙ: 3.21 Hz • ζ: 4.1%</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs bg-amber-100 text-amber-800 border border-amber-200">Alert</span>
+                    <button class="px-3 py-2 rounded-xl text-xs bg-white/70 border border-white/80 hover:shadow transition">CSV</button>
+                    <button class="px-3 py-2 rounded-xl text-xs bg-white/70 border border-white/80 hover:shadow transition">PDF</button>
+                  </div>
+                </div>
+
+                <!-- Record 2 -->
+                <div class="rounded-xl p-3 bg-white/70 border border-white/80 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div>
+                    <div class="text-sm font-semibold">2026-01-10 • 09:15</div>
+                    <div class="text-xs opacity-70 mt-1">Type: Ambient • fₙ: 3.10 Hz • ζ: 3.8%</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800 border border-emerald-200">Normal</span>
+                    <button class="px-3 py-2 rounded-xl text-xs bg-white/70 border border-white/80 hover:shadow transition">CSV</button>
+                    <button class="px-3 py-2 rounded-xl text-xs bg-white/70 border border-white/80 hover:shadow transition">PDF</button>
+                  </div>
+                </div>
+
+                <!-- Record 3 -->
+                <div class="rounded-xl p-3 bg-white/70 border border-white/80 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div>
+                    <div class="text-sm font-semibold">2026-01-08 • 16:02</div>
+                    <div class="text-xs opacity-70 mt-1">Type: Human Activity • fₙ: 3.14 Hz • ζ: 3.9%</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs bg-slate-100 text-slate-700 border border-slate-200">Info</span>
+                    <button class="px-3 py-2 rounded-xl text-xs bg-white/70 border border-white/80 hover:shadow transition">CSV</button>
+                    <button class="px-3 py-2 rounded-xl text-xs bg-white/70 border border-white/80 hover:shadow transition">PDF</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      
+      <!-- PAGE: ABOUT -->
+      
+      <div x-show="page==='about'" x-cloak>
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="font-semibold text-lg text-[color:var(--text-100)]">About</h2>
+            <p class="text-xs opacity-70 mt-1">Project Overview • Sensor Specs • Research Team</p>
+          </div>
+        </div>
+
+        <div class="mt-6 relative h-[360px]">
+          <div class="absolute inset-0 rounded-2xl bg-white/70 border border-white/80 overflow-auto p-4 space-y-4">
+
+            <!-- Project Overview -->
+            <div class="rounded-2xl bg-white/70 border border-white/80 p-4">
+              <div class="text-sm font-semibold">Project Overview</div>
+              <p class="mt-2 text-sm opacity-80 leading-relaxed">
+                This Structural Health Monitoring System (SHMS) is designed to monitor vibration response,
+                identify dynamic properties (natural frequency and damping), and support structural condition
+                assessment for the Science & Technology Building through continuous data collection and analysis.
+              </p>
+            </div>
+
+            <!-- Sensor Specifications -->
+            <div class="rounded-2xl bg-white/70 border border-white/80 p-4">
+              <div class="text-sm font-semibold">Sensor Specifications</div>
+              <p class="mt-2 text-sm opacity-80 leading-relaxed">
+                Raspberry Shake 4D (RS4D) • Channels: Z / N / E • Used for capturing vibration signals for
+                frequency-domain analysis and modal-based interpretation. (Add exact RS4D specs here later.)
+              </p>
+            </div>
+
+            <!-- Research Team -->
+            <div class="rounded-2xl bg-white/70 border border-white/80 p-4">
+              <div class="text-sm font-semibold">Research Team</div>
+              <ul class="mt-2 text-sm opacity-80 space-y-2">
+                <li>• Name 1 — Affiliation</li>
+                <li>• Name 2 — Affiliation</li>
+                <li>• Name 3 — Affiliation</li>
+              </ul>
+              <div class="mt-3 text-xs opacity-60">
+                Acknowledgments: (optional) University / adviser / contributors.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+{% endblock %}

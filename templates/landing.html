@@ -1,0 +1,237 @@
+
+
+{% extends "base_public.html" %}
+
+
+{% block title %}Landing{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="text-center">
+  <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-[color:var(--text-100)]">
+    Structural Health Monitoring System
+  </h1>
+  <p class="mt-3 text-sm md:text-base opacity-80">
+    Using Raspberry Shake 4D • Science & Technology Building • URS Morong
+  </p>
+</div>
+
+<!-- Main Soft-UI Container -->
+
+<div 
+  class="mt-10 md:mt-12
+       rounded-[34px]
+       bg-white/55 backdrop-blur-2xl
+       border border-white/60
+       shadow-[0_22px_70px_rgba(139,69,19,0.14)]
+       ring-1 ring-[color:var(--primary-100)]/15
+       px-10 pt-8 pb-8
+       max-w-6xl mx-auto"
+
+
+>
+  
+
+  <p class="text-center text-sm md:text-base opacity-85 max-w-2xl mx-auto leading-relaxed">
+    A centralized web-based system for monitoring structural health, identifying dynamic properties,
+    and evaluating inter-story drift of the Science and Technology Building.
+  </p>
+
+ <!-- MODULE CARDS -->
+<div class="mt-10 flex flex-col md:flex-row justify-center gap-6">
+
+  <!-- SHM CARD -->
+  <div
+    class="relative group cursor-pointer
+           w-full md:w-[280px] h-[220px]
+           rounded-[26px] p-6 text-center
+           bg-white/70 backdrop-blur-xl
+           border border-white/70
+           shadow-[0_22px_60px_rgba(139,69,19,0.18)]
+           hover:-translate-y-1
+           hover:shadow-[0_30px_80px_rgba(255,127,80,0.35)]
+           transition-all duration-300">
+
+    <!-- NORMAL CONTENT -->
+    <div class="transition-opacity duration-300 group-hover:opacity-0">
+      <div class="mx-auto h-16 w-16 rounded-full flex items-center justify-center
+                  bg-emerald-100/60 text-emerald-600 shadow-inner">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 12h3l3-8 4 16 3-8h5" />
+        </svg>
+      </div>
+
+      <h3 class="mt-4 font-semibold text-[color:var(--text-100)]">
+        Structural Health Monitoring
+      </h3>
+
+      <p class="mt-2 text-sm opacity-70">
+        Overall condition and vibration monitoring
+      </p>
+    </div>
+
+    <!-- HOVER SUMMARY -->
+    <div
+      class="absolute inset-0 rounded-[26px]
+             flex items-center justify-center text-center
+             bg-white/90 backdrop-blur
+             opacity-0 group-hover:opacity-100
+             transition-opacity duration-300 p-5">
+      <p class="text-sm leading-relaxed text-[color:var(--text-200)]">
+        Monitors real-time vibration data from the structure to assess
+        overall health, detect unusual events, and observe long-term behavior trends.
+      </p>
+    </div>
+  </div>
+
+  <!-- NFD CARD -->
+  <div
+    class="relative group cursor-pointer
+           w-full md:w-[280px] h-[220px]
+           rounded-[26px] p-6 text-center
+           bg-white/70 backdrop-blur-xl
+           border border-white/70
+           shadow-[0_22px_60px_rgba(139,69,19,0.18)]
+           hover:-translate-y-1
+           hover:shadow-[0_30px_80px_rgba(255,210,153,0.45)]
+           transition-all duration-300">
+
+    <div class="transition-opacity duration-300 group-hover:opacity-0">
+      <div class="mx-auto h-16 w-16 rounded-full flex items-center justify-center
+                  bg-orange-100/60 text-orange-600 shadow-inner">
+        <svg xmlns="http://www.w3.org/2000/svg"
+     fill="none"
+     viewBox="0 0 24 24"
+     stroke="currentColor"
+     stroke-width="1.5"
+     class="h-8 w-8">
+  <path stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M9.348 14.652a3.75 3.75 0 0 1 0-5.304
+           m5.304 0a3.75 3.75 0 0 1 0 5.304
+           m-7.425 2.121a6.75 6.75 0 0 1 0-9.546
+           m9.546 0a6.75 6.75 0 0 1 0 9.546
+           M5.106 18.894c-3.808-3.807-3.808-9.98 0-13.788
+           m13.788 0c3.808 3.807 3.808 9.98 0 13.788
+           M12 12h.008v.008H12V12
+           m.375 0a.375.375 0 1 1-.75 0
+           .375.375 0 0 1 .75 0" />
+</svg>
+
+      </div>
+
+      <h3 class="mt-4 font-semibold text-[color:var(--text-100)]">
+        Natural Frequency & Damping
+      </h3>
+
+      <p class="mt-2 text-sm opacity-70">
+        Dynamic response and signal analysis
+      </p>
+    </div>
+
+    <div
+      class="absolute inset-0 rounded-[26px]
+             flex items-center justify-center text-center
+             bg-white/90 backdrop-blur
+             opacity-0 group-hover:opacity-100
+             transition-opacity duration-300 p-5">
+      <p class="text-sm leading-relaxed text-[color:var(--text-200)]">
+        Identifies natural frequencies and damping ratios of the structure
+        using vibration response and frequency-domain analysis.
+      </p>
+    </div>
+  </div>
+
+  <!-- DRIFT CARD -->
+  <div
+    class="relative group cursor-pointer
+           w-full md:w-[280px] h-[220px]
+           rounded-[26px] p-6 text-center
+           bg-white/70 backdrop-blur-xl
+           border border-white/70
+           shadow-[0_22px_60px_rgba(139,69,19,0.18)]
+           hover:-translate-y-1
+           hover:shadow-[0_30px_80px_rgba(0,0,0,0.18)]
+           transition-all duration-300">
+
+    <div class="transition-opacity duration-300 group-hover:opacity-0">
+      <div class="mx-auto h-16 w-16 rounded-full flex items-center justify-center
+                  bg-sky-100/70 text-sky-600 shadow-inner">
+        <svg xmlns="http://www.w3.org/2000/svg"
+     fill="none"
+     viewBox="0 0 24 24"
+     stroke="currentColor"
+     stroke-width="1.5"
+     class="h-8 w-8">
+  <path stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M2.25 21h19.5
+           m-18-18v18
+           m10.5-18v18
+           m6-13.5V21
+           M6.75 6.75h.75
+           m-.75 3h.75
+           m-.75 3h.75
+           m3-6h.75
+           m-.75 3h.75
+           m-.75 3h.75
+           M6.75 21v-3.375
+           c0-.621.504-1.125 1.125-1.125h2.25
+           c.621 0 1.125.504 1.125 1.125V21
+           M3 3h12
+           m-.75 4.5H21
+           m-3.75 3.75h.008v.008h-.008v-.008
+           m0 3h.008v.008h-.008v-.008
+           m0 3h.008v.008h-.008v-.008" />
+</svg>
+
+      </div>
+
+      <h3 class="mt-4 font-semibold text-[color:var(--text-100)]">
+        Inter-Story Drift Monitoring
+      </h3>
+
+      <p class="mt-2 text-sm opacity-70">
+        Floor displacement and safety evaluation
+      </p>
+    </div>
+
+    <div
+      class="absolute inset-0 rounded-[26px]
+             flex items-center justify-center text-center
+             bg-white/90 backdrop-blur
+             opacity-0 group-hover:opacity-100
+             transition-opacity duration-300 p-5">
+      <p class="text-sm leading-relaxed text-[color:var(--text-200)]">
+        Evaluates inter-story drift by monitoring relative floor displacements
+        to support structural safety and performance assessment.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+  <!-- BIG ngani Panel -->
+ 
+
+  <!-- Login CTA -->
+  <div class="flex justify-center mt-9 md:mt-10">
+    <a href="{% url 'login' %}"
+       class="px-12 py-4 rounded-full font-semibold text-white
+              bg-[linear-gradient(90deg,var(--primary-100),var(--primary-200))]
+              shadow-[0_22px_70px_rgba(255,127,80,0.32)]
+              hover:shadow-[0_26px_78px_rgba(221,98,54,0.38)]
+              hover:-translate-y-[1px] transition-all duration-300">
+      Login to Dashboard
+
+    </a>
+  </div>
+
+</div>
+
+{% endblock %}

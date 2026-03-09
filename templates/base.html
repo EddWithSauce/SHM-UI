@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}SHMS{% endblock %}</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary-100:#FF7F50;
+      --primary-200:#dd6236;
+      --primary-300:#8f1e00;
+
+      --accent-100:#8B4513;
+      --accent-200:#ffd299;
+
+      --text-100:#000000;
+      --text-200:#2c2c2c;
+
+      --bg-100:#F7EEDD;
+      --bg-200:#ede4d3;
+      --bg-300:#c4bcab;
+    }
+
+    html, body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  </style>
+</head>
+
+<body class="h-screen overflow-hidden text-[color:var(--text-200)]">
+
+  <!-- Warm soft background -->
+  <div class="relative min-h-screen overflow-hidden bg-[color:var(--bg-100)]">
+    <!-- Soft blobs (lively but still beige/orange) -->
+    <div class="pointer-events-none absolute -top-28 -left-32 h-[460px] w-[460px] rounded-full
+                bg-[color:var(--accent-200)] opacity-70 blur-3xl"></div>
+
+    <div class="pointer-events-none absolute top-12 -right-40 h-[520px] w-[520px] rounded-full
+                bg-[color:var(--primary-100)] opacity-18 blur-3xl"></div>
+
+    <div class="pointer-events-none absolute -bottom-40 left-1/3 h-[560px] w-[560px] rounded-full
+                bg-[color:var(--primary-200)] opacity-12 blur-3xl"></div>
+
+    <div class="relative px-4 h-full">
+  {% block content %}{% endblock %}
+</div>
+
+
+  </div>
+</body>
+</html>
